@@ -1,0 +1,17 @@
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/bin/Debug/net9.0/InventoryApp.Data.deps.json
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/bin/Debug/net9.0/InventoryApp.Data.runtimeconfig.json
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/bin/Debug/net9.0/InventoryApp.Data.dll
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/bin/Debug/net9.0/InventoryApp.Data.pdb
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/bin/Debug/net9.0/InventoryApp.Domain.dll
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/bin/Debug/net9.0/InventoryApp.Domain.pdb
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/obj/Debug/net9.0/InventoryApp.Data.csproj.AssemblyReference.cache
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/obj/Debug/net9.0/InventoryApp.Data.GeneratedMSBuildEditorConfig.editorconfig
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/obj/Debug/net9.0/InventoryApp.Data.AssemblyInfoInputs.cache
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/obj/Debug/net9.0/InventoryApp.Data.AssemblyInfo.cs
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/obj/Debug/net9.0/InventoryApp.Data.csproj.CoreCompileInputs.cache
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/obj/Debug/net9.0/Inventor.EC2488DB.Up2Date
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/obj/Debug/net9.0/InventoryApp.Data.dll
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/obj/Debug/net9.0/refint/InventoryApp.Data.dll
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/obj/Debug/net9.0/InventoryApp.Data.pdb
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/obj/Debug/net9.0/InventoryApp.Data.genruntimeconfig.cache
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Data/obj/Debug/net9.0/ref/InventoryApp.Data.dll

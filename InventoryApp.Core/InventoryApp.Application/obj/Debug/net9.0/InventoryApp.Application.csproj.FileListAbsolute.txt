@@ -1,0 +1,11 @@
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/InventoryApp.Application/bin/Debug/net9.0/InventoryApp.Application.deps.json
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/InventoryApp.Application/bin/Debug/net9.0/InventoryApp.Application.dll
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/InventoryApp.Application/bin/Debug/net9.0/InventoryApp.Application.pdb
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/InventoryApp.Application/obj/Debug/net9.0/InventoryApp.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/InventoryApp.Application/obj/Debug/net9.0/InventoryApp.Application.AssemblyInfoInputs.cache
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/InventoryApp.Application/obj/Debug/net9.0/InventoryApp.Application.AssemblyInfo.cs
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/InventoryApp.Application/obj/Debug/net9.0/InventoryApp.Application.csproj.CoreCompileInputs.cache
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/InventoryApp.Application/obj/Debug/net9.0/InventoryApp.Application.dll
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/InventoryApp.Application/obj/Debug/net9.0/refint/InventoryApp.Application.dll
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/InventoryApp.Application/obj/Debug/net9.0/InventoryApp.Application.pdb
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/InventoryApp.Application/obj/Debug/net9.0/ref/InventoryApp.Application.dll

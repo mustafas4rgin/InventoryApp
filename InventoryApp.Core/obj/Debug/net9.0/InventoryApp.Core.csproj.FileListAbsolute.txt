@@ -1,0 +1,4 @@
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/obj/Debug/net9.0/InventoryApp.Core.GeneratedMSBuildEditorConfig.editorconfig
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/obj/Debug/net9.0/InventoryApp.Core.AssemblyInfoInputs.cache
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/obj/Debug/net9.0/InventoryApp.Core.AssemblyInfo.cs
+/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/obj/Debug/net9.0/InventoryApp.Core.csproj.CoreCompileInputs.cache
