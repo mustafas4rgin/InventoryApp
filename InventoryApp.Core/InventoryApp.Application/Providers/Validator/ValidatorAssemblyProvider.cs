@@ -9,12 +9,12 @@ public class ValidatorAssemblyProvider
     {
         return new[]
         {
-            typeof(CategoryValidator),
-            typeof(NotificationValidator),
-            typeof(ProductValidator),
+            typeof(UserValidator),
             typeof(RoleValidator),
             typeof(SupplierValidator),
-            typeof(UserValidator)
+            typeof(NotificationValidator),
+            typeof(CategoryValidator),
+            typeof(ProductValidator)
         };
     }
 }

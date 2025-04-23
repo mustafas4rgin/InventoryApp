@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "Y8dVMTOaAa8=",
+  "dgSpecHash": "yYqSefDe2hA=",
   "success": true,
   "projectFilePath": "/Users/s4rgin/Desktop/Projects/InventoryApp/InventoryApp.Core/InventoryApp.Application/InventoryApp.Application.csproj",
   "expectedPackageFiles": [
     "/Users/s4rgin/.nuget/packages/fluentvalidation/11.11.0/fluentvalidation.11.11.0.nupkg.sha512",
+    "/Users/s4rgin/.nuget/packages/fluentvalidation.dependencyinjectionextensions/11.11.0/fluentvalidation.dependencyinjectionextensions.11.11.0.nupkg.sha512",
     "/Users/s4rgin/.nuget/packages/microsoft.entityframeworkcore/9.0.4/microsoft.entityframeworkcore.9.0.4.nupkg.sha512",
     "/Users/s4rgin/.nuget/packages/microsoft.entityframeworkcore.abstractions/9.0.4/microsoft.entityframeworkcore.abstractions.9.0.4.nupkg.sha512",
     "/Users/s4rgin/.nuget/packages/microsoft.entityframeworkcore.analyzers/9.0.4/microsoft.entityframeworkcore.analyzers.9.0.4.nupkg.sha512",

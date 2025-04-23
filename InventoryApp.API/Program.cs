@@ -12,11 +12,6 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDataServices(builder.Configuration);
 
-var validatorAssemblies = ValidatorAssemblyProvider.GetValidatorAssemblies();
-
-foreach (var assemblyType in validatorAssemblies)
-    builder.Services.AddValidatorsFromAssemblyContaining(assemblyType);
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
