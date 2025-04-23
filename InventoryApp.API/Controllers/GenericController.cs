@@ -33,7 +33,7 @@ namespace InventoryApp.API.Controllers
             _mapper = mapper;
         }
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll()
+        public virtual async Task<IActionResult> GetAll(string? include)
         {
             var result = await _genericService.GetAllAsync();
 
@@ -47,7 +47,7 @@ namespace InventoryApp.API.Controllers
             return Ok(dto);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public virtual async Task<IActionResult> GetById(int id,string? include)
         {
             var result = await _genericService.GetByIdAsync(id);
 
@@ -61,7 +61,7 @@ namespace InventoryApp.API.Controllers
             return Ok(dto);
         }
         [HttpPost("Add")]
-        public async Task<IActionResult> Add(TCreateDto dto)
+        public virtual async Task<IActionResult> Add(TCreateDto dto)
         {
             var validationResult = await _createValidator.ValidateAsync(dto);
 
@@ -78,7 +78,7 @@ namespace InventoryApp.API.Controllers
             return Ok(result.Message);
         }
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> Update([FromRoute]int id,[FromBody]TUpdateDto dto)
+        public virtual async Task<IActionResult> Update([FromRoute]int id,[FromBody]TUpdateDto dto)
         {
             var validationResult = await _updateValidator.ValidateAsync(dto);
 

@@ -18,7 +18,7 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
         _validator = validator;
         _genericRepository = genericRepository;
     }
-    public async Task<IServiceResultWithData<IEnumerable<T>>> GetAllAsync()
+    public virtual async Task<IServiceResultWithData<IEnumerable<T>>> GetAllAsync()
     {
         try
         {
@@ -34,7 +34,7 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
             return new ErrorResultWithData<IEnumerable<T>>(ex.Message);
         }
     }
-    public async Task<IServiceResultWithData<T>> GetByIdAsync(int id)
+    public virtual async Task<IServiceResultWithData<T>> GetByIdAsync(int id)
     {
         try
         {
@@ -50,7 +50,7 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
             return new ErrorResultWithData<T>(ex.Message);
         }
     }
-    public async Task<IServiceResult> AddAsync(T entity)
+    public virtual async Task<IServiceResult> AddAsync(T entity)
     {
         try
         {
@@ -97,7 +97,7 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
             if (!validationResult.IsValid)
                 return new ErrorResult(string.Join(" | ", validationResult.Errors.Select(e => e.ErrorMessage)));
 
-            await _genericRepository.DeleteAsync(entity);
+            _genericRepository.Delete(entity);
             await _genericRepository.SaveChangesAsync();
 
             return new SuccessResult("Entity deleted.");
