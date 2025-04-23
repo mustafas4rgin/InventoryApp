@@ -1,3 +1,5 @@
+using InventoryApp.Application.Services;
+using InventoryApp.Domain.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InventoryApp.Application.Providers.Service;
@@ -8,7 +10,7 @@ public class ServiceRegistrationProvider
     {
         var servicesToRegister = new (Type Interface, Type Implementation)[]
         {
-            //(typeof(IGenericService<>),typeof(GenericService<>)),
+            (typeof(IGenericService<>),typeof(GenericService<>)),
         };
         foreach (var service in servicesToRegister)
         {

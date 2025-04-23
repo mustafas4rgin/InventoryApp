@@ -7,12 +7,6 @@ public class NotificationValidator : AbstractValidator<Notification>
 {
     public NotificationValidator()
     {
-        RuleFor(n => n.Id)
-           .NotNull()
-           .WithMessage("ID value cannot be null.")
-           .GreaterThan(0)
-           .WithMessage("ID value must be greater than zero.");
-
         RuleFor(n => n.UserId)
             .NotNull()
             .WithMessage("UserID cannot be null.")

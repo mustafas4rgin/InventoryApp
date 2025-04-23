@@ -11,6 +11,10 @@ public static class BusinessServiceRegistration
     {
         ServiceRegistrationProvider.RegisterServices(services);
 
+        return services;
+    }
+    public static IServiceCollection AddValidatorService(this IServiceCollection services)
+    {
         var validatorAssemblies = ValidatorAssemblyProvider.GetValidatorAssemblies();
 
         var createDtoValidatorAssemblies = CreateDTOValidatorAssemblyProvider.GetValidatorAssemblies();
@@ -26,8 +30,6 @@ public static class BusinessServiceRegistration
         foreach (var assemblyType in validatorAssemblies)
             services.AddValidatorsFromAssemblyContaining(assemblyType);
 
-        
-        
         return services;
     }
 }

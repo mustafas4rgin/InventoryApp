@@ -4,6 +4,7 @@ namespace InventoryApp.Application.DTOs.List;
 
 public class NotificationDTO
 {
+    public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
         public int UserId { get; set; }

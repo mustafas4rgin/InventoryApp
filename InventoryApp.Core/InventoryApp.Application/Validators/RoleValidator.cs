@@ -7,12 +7,6 @@ public class RoleValidator : AbstractValidator<Role>
 {
     public RoleValidator()
     {
-        RuleFor(r => r.Id)
-           .NotNull()
-           .WithMessage("ID value cannot be null.")
-           .GreaterThan(0)
-           .WithMessage("ID value must be greater than zero.");
-
         RuleFor(r => r.Name)
             .NotNull()
             .WithMessage("Name cannot be empty.")

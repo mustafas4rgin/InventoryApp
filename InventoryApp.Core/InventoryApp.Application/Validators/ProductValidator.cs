@@ -7,11 +7,6 @@ public class ProductValidator : AbstractValidator<Product>
 {
     public ProductValidator()
     {
-        RuleFor(p => p.Id)
-            .NotNull()
-            .WithMessage("ID value cannot be null.")
-            .GreaterThan(0)
-            .WithMessage("ID value must be greater than zero.");
 
         RuleFor(p => p.CategoryId)
             .NotNull()

@@ -7,12 +7,6 @@ public class UserValidator : AbstractValidator<User>
 {
     public UserValidator()
     {
-        RuleFor(u => u.Id)
-            .NotNull()
-            .WithMessage("ID value cannot be null.")
-            .GreaterThan(0)
-            .WithMessage("ID value must be greater than zero.");
-
         RuleFor(u => u.Email)
             .NotNull()
             .WithMessage("Email cannot be empty.")
