@@ -12,9 +12,9 @@ namespace InventoryApp.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoryContoller : GenericController<Category,CreateCategoryDTO,UpdateCategoryDTO,CategoryDTO>
+    public class CategoryController : GenericController<Category,CreateCategoryDTO,UpdateCategoryDTO,CategoryDTO>
     {
-        public CategoryContoller(
+        public CategoryController(
             IGenericService<Category> service,
             IValidator<CreateCategoryDTO> createValidator,
             IValidator<UpdateCategoryDTO> updateValidator,

@@ -8,5 +8,5 @@ public class CreateNotificationDTO
         public string Message { get; set; } = string.Empty;
         public int UserId { get; set; }
         public NotificationType Type { get; set; }
-        public NotificationStatus Status { get; set; } = NotificationStatus.Unread;
+        
 }

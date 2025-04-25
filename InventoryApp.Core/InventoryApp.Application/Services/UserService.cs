@@ -171,4 +171,8 @@ public class UserService : GenericService<User>, IUserService
     {
         throw new NotSupportedException("Use GetAllUsersWithUncludesAsync instead for User entities.");
     }
+    public override Task<IServiceResultWithData<User>> GetByIdAsync(int id)
+    {
+        throw new NotSupportedException("Use GetUserByIdWithIncludeAsync instead of GetByIdAsync.");
+    }
 }

@@ -14,7 +14,8 @@ public class ValidatorAssemblyProvider
             typeof(SupplierValidator),
             typeof(NotificationValidator),
             typeof(CategoryValidator),
-            typeof(ProductValidator)
+            typeof(ProductValidator),
+            typeof(AccessTokenValidator)
         };
     }
 }

@@ -11,7 +11,6 @@ namespace InventoryApp.Domain.Entities
         public User User { get; set; } = null!;
         
     }
-
     public enum NotificationType
     {
         Info,

@@ -12,4 +12,5 @@ public class NotificationDTO
         public NotificationStatus Status { get; set; } = NotificationStatus.Unread;
         //navigation properties
         public UserDTO User { get; set; } = null!;
+        
 }
