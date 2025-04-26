@@ -4,8 +4,7 @@ using InventoryApp.Application.DTOs.Create;
 using InventoryApp.Application.DTOs.List;
 using InventoryApp.Domain.Contracts;
 using InventoryApp.Domain.Entities;
-using LibraryApp.Application.DTOs.Update;
-using Microsoft.AspNetCore.Http;
+using InventoryApp.Application.DTOs.Update;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryApp.API.Controllers

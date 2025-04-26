@@ -1,5 +1,5 @@
 using FluentValidation;
-using LibraryApp.Application.DTOs.Update;
+using InventoryApp.Application.DTOs.Update;
 
 namespace InventoryApp.Application.DTOValidators.Update;
 

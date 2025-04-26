@@ -1,7 +1,7 @@
 using FluentValidation;
 using InventoryApp.Domain.Entities;
 
-namespace LibraryApp.Application.Validators;
+namespace InventoryApp.Application.Validators;
 
 public class RoleValidator : AbstractValidator<Role>
 {

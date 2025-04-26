@@ -1,4 +1,4 @@
-namespace LibraryApp.Application.DTOs.Update;
+namespace InventoryApp.Application.DTOs.Update;
 
 public class UpdateRoleDTO
 {

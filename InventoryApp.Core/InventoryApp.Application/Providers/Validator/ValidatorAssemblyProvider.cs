@@ -1,5 +1,4 @@
 using InventoryApp.Application.Validators;
-using LibraryApp.Application.Validators;
 
 namespace InventoryApp.Application.Providers.Validator;
 

@@ -2,7 +2,7 @@ using AutoMapper;
 using InventoryApp.Application.DTOs.Create;
 using InventoryApp.Application.DTOs.List;
 using InventoryApp.Domain.Entities;
-using LibraryApp.Application.DTOs.Update;
+using InventoryApp.Application.DTOs.Update;
 
 namespace InventoryApp.API.Profiles;
 
