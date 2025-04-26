@@ -38,7 +38,7 @@ public class ProductService : GenericService<Product>, IProductService
                 }
             }
 
-            var products = await query.ToListAsync();
+            var products = await query.Where(p => !p.IsDeleted).ToListAsync();
 
             if (!products.Any())
                 return new ErrorResultWithData<IEnumerable<Product>>("There is no product.");
@@ -69,7 +69,7 @@ public class ProductService : GenericService<Product>, IProductService
                 }
             }
 
-            var product = await query.FirstOrDefaultAsync(p => p.Id == id);
+            var product = await query.Where(p => !p.IsDeleted).FirstOrDefaultAsync(p => p.Id == id);
 
             if (product is null)
                 return new ErrorResultWithData<Product>($"There is no product with ID : {id}");

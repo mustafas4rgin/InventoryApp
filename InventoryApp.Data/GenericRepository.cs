@@ -57,8 +57,11 @@ public class GenericRepository : IGenericRepository
     {
         if (entity is null)
             return;
-            
-        _context.Set<T>().Remove(entity);
+
+        entity.IsDeleted = true;
+        entity.DeletedAt = DateTime.UtcNow;
+
+        _context.Update(entity);
     }
     public async Task SaveChangesAsync()
     {

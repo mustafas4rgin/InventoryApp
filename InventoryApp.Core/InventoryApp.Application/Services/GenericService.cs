@@ -18,11 +18,31 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
         _validator = validator;
         _genericRepository = genericRepository;
     }
+    public async Task<IServiceResultWithData<IEnumerable<T>>> GetAllDeletedAsync()
+    {
+        try
+        {
+            var deletedEntities = await _genericRepository.GetAll<T>()
+                                .Where(e => e.IsDeleted)
+                                .ToListAsync();
+
+            if (!deletedEntities.Any())
+                return new ErrorResultWithData<IEnumerable<T>>("There is no deleted entity.");
+
+            return new SuccessResultWithData<IEnumerable<T>>("Deleted entities found.",deletedEntities);
+        }
+        catch (Exception ex)
+        {
+            return new ErrorResultWithData<IEnumerable<T>>(ex.Message);
+        }
+    }
     public virtual async Task<IServiceResultWithData<IEnumerable<T>>> GetAllAsync()
     {
         try
         {
-            var entities = await _genericRepository.GetAll<T>().ToListAsync();
+            var entities = await _genericRepository.GetAll<T>()
+                                .Where(e => !e.IsDeleted)
+                                .ToListAsync();
 
             if (!entities.Any())
                 return new ErrorResultWithData<IEnumerable<T>>("There is no entity.");
@@ -40,7 +60,7 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
         {
             var entity = await _genericRepository.GetByIdAsync<T>(id);
 
-            if (entity is null)
+            if (entity is null || entity.IsDeleted)
                 return new ErrorResultWithData<T>($"There is no entity with this ID: {id}");
 
             return new SuccessResultWithData<T>("Entity found",entity);
@@ -78,6 +98,9 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
             if (!validationResult.IsValid)
                 return new ErrorResult(string.Join(" | ", validationResult.Errors.Select(e => e.ErrorMessage)));
 
+            if (entity.IsDeleted)
+                return new ErrorResult("Entity no longer exists.");
+
             await _genericRepository.UpdateAsync(entity);
             await _genericRepository.SaveChangesAsync();
 
@@ -97,6 +120,9 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
             if (!validationResult.IsValid)
                 return new ErrorResult(string.Join(" | ", validationResult.Errors.Select(e => e.ErrorMessage)));
 
+            if (entity.IsDeleted)
+                return new ErrorResult("Entity no longer exists.");
+            
             _genericRepository.Delete(entity);
             await _genericRepository.SaveChangesAsync();
 

@@ -3,8 +3,10 @@ using FluentValidation;
 using InventoryApp.API.Swagger;
 using InventoryApp.Application.Providers.Validator;
 using InventoryApp.Application.Registrations;
+using InventoryApp.Data;
 using InventoryApp.Data.Context;
 using InventoryApp.Data.Registrations;
+using InventoryApp.Domain.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -23,6 +25,8 @@ builder.Services
     {
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
+
+builder.Services.AddSingleton<ILoggerService, FileLoggerService>();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -82,16 +86,18 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
 }
-app.MapControllers();
 
-app.UseSwagger();
-app.UseSwaggerUI(c => 
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "InventoryApp API V1");
-});
+app.UseMiddleware<ExceptionHandlingMiddleware>(); 
+
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers(); 
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 
 

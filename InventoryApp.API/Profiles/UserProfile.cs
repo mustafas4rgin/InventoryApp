@@ -5,8 +5,6 @@ using InventoryApp.Application.DTOs.Update;
 using InventoryApp.Application.Helpers;
 using InventoryApp.Domain.Entities;
 
-namespace InventoryApp.API.Profiles;
-
 public class UserProfile : Profile
 {
     public UserProfile()
@@ -14,7 +12,6 @@ public class UserProfile : Profile
         CreateMap<CreateUserDTO, User>()
             .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
             .ForMember(dest => dest.PasswordSalt, opt => opt.Ignore())
-            //.ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => 2)) 
             .AfterMap((src, dest) =>
             {
                 HashingHelper.CreatePasswordHash(src.Password, out var hash, out var salt);
@@ -25,9 +22,10 @@ public class UserProfile : Profile
         CreateMap<UpdateUserDTO, User>().ReverseMap();
 
         CreateMap<User, UserDTO>()
-            .ForMember(dest => dest.CreatedAt,
-                opt => opt.MapFrom(src => src.CreatedAt.ToString("dd.MM.yyyy HH:mm")))
-            .ForMember(dest => dest.UpdatedAt,
-                opt => opt.MapFrom(src => src.UpdatedAt.ToString("dd.MM.yyyy HH:mm")));
+    .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt.ToString("dd.MM.yyyy HH:mm")))
+    .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt.HasValue ? src.UpdatedAt.Value.ToString("dd.MM.yyyy HH:mm") : null))
+    .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.Name))
+    .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Supplier.Name)); 
+
     }
 }

@@ -13,7 +13,7 @@ namespace MyApp.Namespace
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : GenericController<User,CreateUserDTO,UpdateUserDTO,UserDTO>
+    public class UserController : GenericController<User, CreateUserDTO, UpdateUserDTO, UserDTO>
     {
         private readonly IValidator<UpdateUserDTO> _updateValidator;
         private readonly IUserService _userService;
@@ -23,7 +23,7 @@ namespace MyApp.Namespace
         IValidator<CreateUserDTO> createValidator,
         IValidator<UpdateUserDTO> updateValidator,
         IMapper mapper
-        ) : base(userService,createValidator,updateValidator,mapper)
+        ) : base(userService, createValidator, updateValidator, mapper)
         {
             _updateValidator = updateValidator;
             _createValidator = createValidator;
@@ -59,9 +59,9 @@ namespace MyApp.Namespace
 
             return Ok(dto);
         }
-        public override async Task<IActionResult> GetById(int id,string? include)
+        public override async Task<IActionResult> GetById(int id, string? include)
         {
-            var result = await _userService.GetAllUsersWithIncludeAsync(include);
+            var result = await _userService.GetUserByIdWithIncludeAsync(include, id);
 
             if (!result.Success)
                 return NotFound(result.Message);
@@ -72,29 +72,30 @@ namespace MyApp.Namespace
 
             return Ok(dto);
         }
-        public override async Task<IActionResult> Update([FromRoute]int id,[FromBody]UpdateUserDTO dto)
+        public override async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateUserDTO dto)
         {
             var dtoValidationResult = await _updateValidator.ValidateAsync(dto);
 
             if (!dtoValidationResult.IsValid)
                 return BadRequest(dtoValidationResult.Errors);
 
-            var existingUserResult = await _userService.GetByIdAsync(id);
+            var existingUserResult = await _userService.GetUserByIdWithIncludeAsync(null, id); // << BURASI DÜZELDİ
 
             if (!existingUserResult.Success)
                 return NotFound(existingUserResult.Message);
 
             var existingUser = existingUserResult.Data;
 
-            _mapper.Map(dto,existingUser);
+            _mapper.Map(dto, existingUser);
 
-            var updatingResult = await _userService.UpdateAsync(existingUser);
+            var updatingResult = await _userService.UpdateUserAsync(existingUser); // dikkat! Update değil UpdateUserAsync
 
             if (!updatingResult.Success)
                 return BadRequest(updatingResult.Message);
 
             return Ok(updatingResult.Message);
         }
+
 
     }
 }

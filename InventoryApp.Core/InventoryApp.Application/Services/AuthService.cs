@@ -48,10 +48,18 @@ public class AuthService : IAuthService
     {
         var refreshToken = await _genericRepository.GetAll<RefreshToken>()
                             .FirstOrDefaultAsync(rt => rt.Token == dto.Token);
-
-        if (refreshToken is null || refreshToken.ExpiresAt <= DateTime.UtcNow)
+    
+        if (refreshToken is null)
             return new ErrorResultWithData<TokenResponseDTO>("Invalid token.");
 
+        if (refreshToken.ExpiresAt <= DateTime.UtcNow)
+        {
+            _genericRepository.Delete(refreshToken);
+            await _genericRepository.SaveChangesAsync();
+
+            return new ErrorResultWithData<TokenResponseDTO>("Token expired.");
+        }
+            
         if (refreshToken.IsUsed)
             return new ErrorResultWithData<TokenResponseDTO>("Refresh token has already been used.");
 
@@ -94,7 +102,7 @@ public class AuthService : IAuthService
                         .Include(u => u.Role)
                         .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
-        if (user is null || !HashingHelper.VerifyPasswordHash(dto.Password, user.PasswordHash, user.PasswordSalt))
+        if (user is null || !HashingHelper.VerifyPasswordHash(dto.Password, user.PasswordHash, user.PasswordSalt) || user.IsDeleted)
             return new ErrorResultWithData<TokenResponseDTO>("Invalid email or password.");
 
         var accessTokenResult = _tokenService.GenerateJwtAccessToken(user);

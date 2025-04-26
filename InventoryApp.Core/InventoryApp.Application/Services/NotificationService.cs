@@ -37,7 +37,7 @@ public class NotificationService : GenericService<Notification>, INotificationSe
                 }
             }
 
-            var notification = await query.FirstOrDefaultAsync(n => n.Id == id);
+            var notification = await query.FirstOrDefaultAsync(n => n.Id == id && !n.IsDeleted);
 
             if (notification is null)
                 return new ErrorResultWithData<Notification>($"There is no notification with ID : {id}");
@@ -66,7 +66,7 @@ public class NotificationService : GenericService<Notification>, INotificationSe
                 }
             }
 
-            var notifications = await query.ToListAsync();
+            var notifications = await query.Where(n => !n.IsDeleted).ToListAsync();
 
             if (!notifications.Any())
                 return new ErrorResultWithData<IEnumerable<Notification>>("There is no notification.");

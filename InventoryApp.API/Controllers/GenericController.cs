@@ -35,6 +35,21 @@ namespace InventoryApp.API.Controllers
             _mapper = mapper;
         }
         [Authorize(Roles = "Admin")]
+        [HttpGet("GetAllDeleted")]
+        public async Task<IActionResult> GetAllDeleted()
+        {
+            var result = await _genericService.GetAllDeletedAsync();
+
+            if (!result.Success)
+                return NotFound(result.Message);
+
+            var deletedEntities = result.Data;
+
+            var dto = _mapper.Map<List<TListDto>>(deletedEntities);
+
+            return Ok(dto);
+        }
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetAll")]
         public virtual async Task<IActionResult> GetAll(string? include)
         {

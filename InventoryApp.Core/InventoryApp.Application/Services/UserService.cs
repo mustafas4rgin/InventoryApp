@@ -28,40 +28,41 @@ public class UserService : GenericService<User>, IUserService
         {
             var validationResult = await _validator.ValidateAsync(user);
 
-        if (!validationResult.IsValid)
-            return new ErrorResult(
-                validationResult.Errors
-                    .Select(e => e.ErrorMessage)
-                    .Aggregate((a, b) => $"{a} | {b}")
-            );
+            if (!validationResult.IsValid)
+                return new ErrorResult(
+                    validationResult.Errors
+                        .Select(e => e.ErrorMessage)
+                        .Aggregate((a, b) => $"{a} | {b}")
+                );
 
-        var existingUser = await _genericRepository.GetAll<User>()
-                                .FirstOrDefaultAsync(u => u.Email == user.Email);
+            var existingUser = await _genericRepository.GetAll<User>()
+                                    .Where(u => !u.IsDeleted)
+                                    .FirstOrDefaultAsync(u => u.Email == user.Email);
 
-        if (existingUser is not null)
-            return new ErrorResult("There is a user with same email.");
+            if (existingUser is not null)
+                return new ErrorResult("There is a user with same email.");
 
-        var role = await _genericRepository.GetByIdAsync<Role>(user.RoleId);
+            var role = await _genericRepository.GetByIdAsync<Role>(user.RoleId);
 
-        if (role is null)
-            return new ErrorResult($"There is no role with ID : {user.RoleId}");
+            if (role is null || role.IsDeleted)
+                return new ErrorResult($"There is no role with ID : {user.RoleId}");
 
-        var supplier = await _genericRepository.GetByIdAsync<Supplier>(user.SupplierId);
+            var supplier = await _genericRepository.GetByIdAsync<Supplier>(user.SupplierId);
 
-        if (supplier is null)
-            return new ErrorResult($"There is no supplier with Id : {user.SupplierId}");
+            if (supplier is null)
+                return new ErrorResult($"There is no supplier with Id : {user.SupplierId}");
 
-        await _genericRepository.UpdateAsync(user);
-        await _genericRepository.SaveChangesAsync();
+            await _genericRepository.UpdateAsync(user);
+            await _genericRepository.SaveChangesAsync();
 
-        return new SuccessResult("User updated successfully.");
-    }
-    catch (Exception ex)
-    {
-        return new ErrorResult(ex.Message);
-    }
+            return new SuccessResult("User updated successfully.");
         }
-        
+        catch (Exception ex)
+        {
+            return new ErrorResult(ex.Message);
+        }
+    }
+
     public async Task<IServiceResultWithData<User>> GetUserByIdWithIncludeAsync(string? include, int id)
     {
         try
@@ -70,7 +71,7 @@ public class UserService : GenericService<User>, IUserService
 
             if (!string.IsNullOrWhiteSpace(include))
             {
-                var includes = include.Split(',',StringSplitOptions.RemoveEmptyEntries);
+                var includes = include.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var inc in includes.Select(i => i.Trim().ToLower()))
                 {
@@ -84,12 +85,12 @@ public class UserService : GenericService<User>, IUserService
                 }
             }
 
-            var user = await query.FirstOrDefaultAsync(u => u.Id == id);
+            var user = await query.Where(u => !u.IsDeleted).FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
                 return new ErrorResultWithData<User>($"There is no user with ID : {id}");
 
-            return new SuccessResultWithData<User>("User found.",user);
+            return new SuccessResultWithData<User>("User found.", user);
         }
         catch (Exception ex)
         {
@@ -118,7 +119,7 @@ public class UserService : GenericService<User>, IUserService
                 }
             }
 
-            var users = await query.ToListAsync();
+            var users = await query.Where(u => !u.IsDeleted).ToListAsync();
 
             if (!users.Any())
                 return new ErrorResultWithData<IEnumerable<User>>("There is no user.");
@@ -144,18 +145,18 @@ public class UserService : GenericService<User>, IUserService
 
         var existingRole = await _genericRepository.GetByIdAsync<Role>(user.RoleId);
 
-        if (existingRole is null)
+        if (existingRole is null || existingRole.IsDeleted)
             return new ErrorResult($"There is no role with ID : {user.RoleId}.");
 
         var existingSupplier = await _genericRepository.GetByIdAsync<Supplier>(user.SupplierId);
 
-        if (existingSupplier is null)
+        if (existingSupplier is null || existingSupplier.IsDeleted)
             return new ErrorResult($"There is no supplier with Id : {user.SupplierId}.");
 
         var existingUser = await _genericRepository.GetAll<User>()
                             .FirstOrDefaultAsync(u => u.Email == user.Email);
 
-        if (existingUser is not null)
+        if (existingUser is not null && !existingUser.IsDeleted)
             return new ErrorResult("There is a user with this email.");
 
         await _genericRepository.AddAsync(user);
@@ -165,14 +166,14 @@ public class UserService : GenericService<User>, IUserService
     }
     public override Task<IServiceResult> AddAsync(User user)
     {
-        throw new NotSupportedException("Use AddUserAsync instead for User entities.");
+        throw new NotSupportedException("Use AddUserAsync instead.");
     }
     public override Task<IServiceResultWithData<IEnumerable<User>>> GetAllAsync()
     {
-        throw new NotSupportedException("Use GetAllUsersWithUncludesAsync instead for User entities.");
+        throw new NotSupportedException("Use GetAllUsersWithIncludesAsync instead.");
     }
     public override Task<IServiceResultWithData<User>> GetByIdAsync(int id)
     {
-        throw new NotSupportedException("Use GetUserByIdWithIncludeAsync instead of GetByIdAsync.");
+        throw new NotSupportedException("Use GetUserByIdWithIncludeAsync instead..");
     }
 }
