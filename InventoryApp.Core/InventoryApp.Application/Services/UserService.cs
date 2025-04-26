@@ -22,6 +22,32 @@ public class UserService : GenericService<User>, IUserService
         _genericRepository = genericRepository;
         _validator = validator;
     }
+    public async Task<IServiceResult> UpdateRoleAsync(int userId,int roleId)
+    {
+        try
+        {
+            var user = await _genericRepository.GetByIdAsync<User>(userId);
+
+            if (user is null || user.IsDeleted)
+                return new ErrorResult($"User with Id {userId} doesn't exist.");
+
+            var role = await _genericRepository.GetByIdAsync<Role>(roleId);
+
+            if (role is null || role.IsDeleted)
+                return new ErrorResult($"Role with Id {roleId} doesn't exist.");
+
+            user.RoleId = role.Id;
+            
+            await _genericRepository.UpdateAsync(user);
+            await _genericRepository.SaveChangesAsync();
+
+            return new SuccessResult("Role updated successfully.");
+        }
+        catch (Exception ex)
+        {
+            return new ErrorResult(ex.Message);
+        }
+    }
     public async Task<IServiceResult> UpdateUserAsync(User user)
     {
         try

@@ -17,6 +17,18 @@ builder.Services.AddValidatorService();
 builder.Services.AddBusinessService();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000") 
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials(); 
+        });
+});
+
 builder.Services.AddAuthService(builder.Configuration);
 
 builder.Services
@@ -88,6 +100,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>(); 
+
+app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
 

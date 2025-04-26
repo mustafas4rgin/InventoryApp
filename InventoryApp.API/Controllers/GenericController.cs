@@ -49,7 +49,7 @@ namespace InventoryApp.API.Controllers
 
             return Ok(dto);
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin ,Supplier")]
         [HttpGet("GetAll")]
         public virtual async Task<IActionResult> GetAll(string? include)
         {

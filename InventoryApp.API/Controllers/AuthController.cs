@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using FluentValidation;
 using InventoryApp.Application.DTOs;
 using InventoryApp.Application.Interfaces;
@@ -12,11 +13,28 @@ namespace InventoryApp.API.Controllers
     {
         private readonly IValidator<LoginDTO> _loginValidator;
         private readonly IAuthService _authService;
-        
+
         public AuthController(IValidator<LoginDTO> loginValidator, IAuthService authService)
         {
             _authService = authService;
             _loginValidator = loginValidator;
+        }
+        [HttpGet("me")]
+        public IActionResult Me()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var firstName = User.FindFirstValue(ClaimTypes.Name);
+            var role = User.FindFirstValue(ClaimTypes.Role);
+
+            if (userId == null)
+                return Unauthorized("Invalid token.");
+
+            return Ok(new
+            {
+                Id = userId,
+                FirstName = firstName,
+                Role = role
+            });
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO dto)
@@ -36,7 +54,7 @@ namespace InventoryApp.API.Controllers
             return Ok(token);
         }
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody]RefreshTokenRequestDTO dto)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDTO dto)
         {
             var tokenResult = await _authService.GenerateAccessTokenWithRefreshTokenAsync(dto);
 

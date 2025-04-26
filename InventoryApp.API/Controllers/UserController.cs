@@ -95,7 +95,15 @@ namespace MyApp.Namespace
 
             return Ok(updatingResult.Message);
         }
+        [HttpPut("{userId}/Role/{roleId}")]
+        public async Task<IActionResult> UpdateRole([FromRoute]int userId,[FromRoute]int roleId)
+        {
+            var result = await _userService.UpdateRoleAsync(userId,roleId);
 
+            if (!result.Success)
+                return BadRequest(result.Message);
 
+            return Ok(result.Message);
+        }
     }
 }

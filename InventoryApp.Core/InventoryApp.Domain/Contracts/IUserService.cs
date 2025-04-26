@@ -9,5 +9,6 @@ public interface IUserService : IGenericService<User>
     Task<IServiceResultWithData<IEnumerable<User>>> GetAllUsersWithIncludeAsync(string? include);
     Task<IServiceResult> AddUserAsync(User user);
     Task<IServiceResult> UpdateUserAsync(User user);
+    Task<IServiceResult> UpdateRoleAsync(int userId,int roleId);
 
 }
