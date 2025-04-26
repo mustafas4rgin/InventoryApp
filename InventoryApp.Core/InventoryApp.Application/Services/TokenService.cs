@@ -28,7 +28,7 @@ public class TokenService : ITokenService
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.FirstName),
-            new Claim(ClaimTypes.Role, user.Role?.Name ?? "User")
+            new Claim(ClaimTypes.Role, user.Role.Name)
         };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -44,17 +44,33 @@ public class TokenService : ITokenService
                 signingCredentials: creds);
 
 
-            return new SuccessResultWithData<JwtSecurityToken>("Jwt access token created.",token);
+            return new SuccessResultWithData<JwtSecurityToken>("Jwt access token created.", token);
         }
         catch (Exception ex)
         {
             return new ErrorResultWithData<JwtSecurityToken>(ex.Message);
         }
     }
-    public IServiceResultWithData<string> GenerateRefreshToken()
+    public IServiceResultWithData<RefreshToken> GenerateRefreshToken(User user)
     {
-        var refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        try
+        {
+            var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
-        return new SuccessResultWithData<string>("Refresh token created.",refreshToken);
+            var refreshToken = new RefreshToken
+            {
+                Token = token,
+                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                UserId = user.Id
+            };
+
+            return new SuccessResultWithData<RefreshToken>("Refresh token created.", refreshToken);
+        }
+        catch (Exception ex)
+        {
+            return new ErrorResultWithData<RefreshToken>(ex.Message);
+        }
+
+
     }
 }

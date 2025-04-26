@@ -6,5 +6,7 @@ namespace InventoryApp.Application.Interfaces;
 
 public interface IAuthService
 {
-    Task<IServiceResultWithData<AccessToken>> LoginAsync(LoginDTO dto); 
+    Task<IServiceResultWithData<TokenResponseDTO>> LoginAsync(LoginDTO dto); 
+    Task<IServiceResultWithData<TokenResponseDTO>> GenerateAccessTokenWithRefreshTokenAsync(RefreshTokenRequestDTO dto);
+
 }

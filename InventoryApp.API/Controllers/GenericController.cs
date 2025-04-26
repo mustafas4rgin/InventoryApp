@@ -2,12 +2,14 @@ using AutoMapper;
 using FluentValidation;
 using InventoryApp.Domain.Contracts;
 using InventoryApp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryApp.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class GenericController<T,TCreateDto,TUpdateDto,TListDto> : ControllerBase
     where T : EntityBase
@@ -32,6 +34,7 @@ namespace InventoryApp.API.Controllers
             _updateValidator = updateValidator;
             _mapper = mapper;
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetAll")]
         public virtual async Task<IActionResult> GetAll(string? include)
         {
@@ -101,6 +104,7 @@ namespace InventoryApp.API.Controllers
 
             return Ok(updatingResult.Message);
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute]int id)
         {

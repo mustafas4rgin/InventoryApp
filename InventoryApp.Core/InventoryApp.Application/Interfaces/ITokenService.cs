@@ -7,5 +7,5 @@ namespace InventoryApp.Application.Interfaces;
 public interface ITokenService
 {
     IServiceResultWithData<JwtSecurityToken> GenerateJwtAccessToken(User user);
-    IServiceResultWithData<string> GenerateRefreshToken();
+    IServiceResultWithData<RefreshToken> GenerateRefreshToken(User user);
 }

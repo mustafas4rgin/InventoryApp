@@ -35,5 +35,15 @@ namespace InventoryApp.API.Controllers
 
             return Ok(token);
         }
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody]RefreshTokenRequestDTO dto)
+        {
+            var tokenResult = await _authService.GenerateAccessTokenWithRefreshTokenAsync(dto);
+
+            if (!tokenResult.Success)
+                return BadRequest(tokenResult.Message);
+
+            return Ok(tokenResult.Data);
+        }
     }
 }
