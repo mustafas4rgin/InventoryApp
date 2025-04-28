@@ -327,6 +327,9 @@ namespace InventoryApp.Data.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -349,9 +352,6 @@ namespace InventoryApp.Data.Migrations
                     b.Property<int>("SupplierId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("SupplierId1")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -360,8 +360,6 @@ namespace InventoryApp.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.HasIndex("SupplierId");
-
-                    b.HasIndex("SupplierId1");
 
                     b.ToTable("Users", (string)null);
                 });
@@ -435,14 +433,10 @@ namespace InventoryApp.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("InventoryApp.Domain.Entities.Supplier", "Supplier")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("InventoryApp.Domain.Entities.Supplier", null)
-                        .WithMany("Users")
-                        .HasForeignKey("SupplierId1");
 
                     b.Navigation("Role");
 

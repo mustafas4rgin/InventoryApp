@@ -28,9 +28,9 @@ namespace MyApp.Namespace
             _mapper = mapper;
             _productService = service;
         }
-        public async override Task<IActionResult> GetAll(string? include)
+        public async override Task<IActionResult> GetAll(string? include,string? search)
         {
-            var result = await _productService.GetProductsWithIncludeAsync(include);
+            var result = await _productService.GetProductsWithIncludeAsync(include,search);
 
             if (!result.Success)
                 return NotFound(result.Message);

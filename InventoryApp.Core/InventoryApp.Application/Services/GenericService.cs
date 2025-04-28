@@ -18,6 +18,30 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
         _validator = validator;
         _genericRepository = genericRepository;
     }
+    public async Task<IServiceResult> HardDeleteAsync(int id)
+    {
+        try
+        {
+            var entity = await _genericRepository.GetByIdAsync<T>(id);
+
+            if (entity is null)
+                return new ErrorResult($"There is no entity with ID : {id}.");
+
+            var validationResult = await _validator.ValidateAsync(entity);
+
+            if (!validationResult.IsValid)
+                return new ErrorResult(string.Join(" | ", validationResult.Errors.Select(e => e.ErrorMessage)));
+
+            _genericRepository.Delete(entity);
+            await _genericRepository.SaveChangesAsync();
+
+            return new SuccessResult("Entity deleted successfully.");
+        }
+        catch (Exception ex)
+        {
+            return new ErrorResult(ex.Message);
+        }
+    }
     public async Task<IServiceResultWithData<IEnumerable<T>>> GetAllDeletedAsync()
     {
         try
@@ -29,7 +53,7 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
             if (!deletedEntities.Any())
                 return new ErrorResultWithData<IEnumerable<T>>("There is no deleted entity.");
 
-            return new SuccessResultWithData<IEnumerable<T>>("Deleted entities found.",deletedEntities);
+            return new SuccessResultWithData<IEnumerable<T>>("Deleted entities found.", deletedEntities);
         }
         catch (Exception ex)
         {
@@ -47,7 +71,7 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
             if (!entities.Any())
                 return new ErrorResultWithData<IEnumerable<T>>("There is no entity.");
 
-            return new SuccessResultWithData<IEnumerable<T>>("Entities found.",entities);
+            return new SuccessResultWithData<IEnumerable<T>>("Entities found.", entities);
         }
         catch (Exception ex)
         {
@@ -63,7 +87,7 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
             if (entity is null || entity.IsDeleted)
                 return new ErrorResultWithData<T>($"There is no entity with this ID: {id}");
 
-            return new SuccessResultWithData<T>("Entity found",entity);
+            return new SuccessResultWithData<T>("Entity found", entity);
         }
         catch (Exception ex)
         {
@@ -80,6 +104,29 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
                 return new ErrorResult(string.Join(" | ", validationResult.Errors.Select(e => e.ErrorMessage)));
 
             await _genericRepository.AddAsync(entity);
+
+            var admins = await _genericRepository.GetAll<User>()
+                            .Include(u => u.Role)
+                            .Where(u => u.Role.Name == "Admin")
+                            .ToListAsync();
+
+            foreach (var admin in admins)
+            {
+                var title = entity?.GetType().GetProperty("Name")?.GetValue(entity)?.ToString()
+           ?? entity?.GetType().GetProperty("Title")?.GetValue(entity)?.ToString()
+           ?? entity.ToString();
+
+                await _genericRepository.AddAsync(
+                    new Notification
+                    {
+                        Title = $"{title}",
+                        Message = $"{title} created",
+                        Type = NotificationType.Info,
+                        UserId = admin.Id,
+                    }
+                );
+            }
+
             await _genericRepository.SaveChangesAsync();
 
             return new SuccessResult("Entity created.");
@@ -102,6 +149,30 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
                 return new ErrorResult("Entity no longer exists.");
 
             await _genericRepository.UpdateAsync(entity);
+
+            var admins = await _genericRepository.GetAll<User>()
+                                .Include(u => u.Role)
+                                .Where(u => u.Role.Name == "Admin")
+                                .ToListAsync();
+
+            foreach (var admin in admins)
+            {
+                var title = entity?.GetType().GetProperty("Name")?.GetValue(entity)?.ToString()
+                        ?? entity?.GetType().GetProperty("Title")?.GetValue(entity)?.ToString()
+                        ?? entity.ToString();
+
+                await _genericRepository.AddAsync(
+
+                    new Notification
+                    {
+                        Title = $"{title}",
+                        Message = $"{title} updated.",
+                        Type = NotificationType.Info,
+                        UserId = admin.Id
+                    }
+                );
+            }
+
             await _genericRepository.SaveChangesAsync();
 
             return new SuccessResult("Entity uptated.");
@@ -111,10 +182,15 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
             return new ErrorResult(ex.Message);
         }
     }
-    public async Task<IServiceResult> DeleteAsync(T entity)
+    public async Task<IServiceResult> DeleteAsync(int id)
     {
         try
         {
+            var entity = await _genericRepository.GetByIdAsync<T>(id);
+
+            if (entity is null)
+                return new ErrorResult($"There is no entity with ID : {id}.");
+
             var validationResult = await _validator.ValidateAsync(entity);
 
             if (!validationResult.IsValid)
@@ -122,8 +198,32 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
 
             if (entity.IsDeleted)
                 return new ErrorResult("Entity no longer exists.");
-            
-            _genericRepository.Delete(entity);
+
+            entity.IsDeleted = true;
+            entity.DeletedAt = DateTime.UtcNow;
+
+            var admins = await _genericRepository.GetAll<User>()
+                            .Include(u => u.Role)
+                            .Where(u => u.Role.Name == "Admin")
+                            .ToListAsync();
+
+            foreach (var admin in admins)
+            {
+                var title = entity?.GetType().GetProperty("Name")?.GetValue(entity)?.ToString()
+                ?? entity?.GetType().GetProperty("Title")?.GetValue(entity)?.ToString()
+                ?? entity.ToString();
+
+                await _genericRepository.AddAsync(
+                    new Notification
+                    {
+                        Title = $"{title}",
+                        Message = $"{title} deleted.",
+                        Type = NotificationType.Warning,
+                        UserId = admin.Id
+                    }
+                );
+            }
+
             await _genericRepository.SaveChangesAsync();
 
             return new SuccessResult("Entity deleted.");

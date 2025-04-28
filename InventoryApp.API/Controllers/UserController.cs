@@ -6,6 +6,7 @@ using InventoryApp.Application.DTOs.List;
 using InventoryApp.Application.DTOs.Update;
 using InventoryApp.Domain.Contracts;
 using InventoryApp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +31,17 @@ namespace MyApp.Namespace
             _userService = userService;
             _mapper = mapper;
         }
+        [Authorize(Roles = "Admin")]
+        [HttpPut("Approve/{userId}")]
+        public async Task<IActionResult> ApproveUser(int userId)
+        {
+            var result = await _userService.ApproveUserAsync(userId);
+
+            if (!result.Success)
+                return NotFound(result.Message);
+
+            return Ok(result.Message);
+        }
         public override async Task<IActionResult> Add(CreateUserDTO dto)
         {
             var dtoValidationResult = await _createValidator.ValidateAsync(dto);
@@ -46,9 +58,10 @@ namespace MyApp.Namespace
 
             return CreatedAtAction(nameof(GetById), new { id = user.Id }, addingResult);
         }
-        public override async Task<IActionResult> GetAll(string? include)
+        [Authorize(Roles ="Admin")]
+        public override async Task<IActionResult> GetAll(string? include,string? search)
         {
-            var result = await _userService.GetAllUsersWithIncludeAsync(include);
+            var result = await _userService.GetAllUsersWithIncludeAsync(include,search);
 
             if (!result.Success)
                 return NotFound(result.Message);

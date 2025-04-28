@@ -16,13 +16,13 @@ public class NotificationValidator : AbstractValidator<Notification>
         RuleFor(n => n.Message)
             .NotNull()
             .WithMessage("Message field cannot be empty.")
-            .Length(5,500)
+            .Length(2,500)
             .WithMessage("Message must be between 5-500 characters");
 
         RuleFor(n => n.Title)
             .NotNull()
             .WithMessage("Title cannot be empty.")
-            .Length(5,100)
+            .Length(2,100)
             .WithMessage("Title must be between 5-100 characters.");
 
     }

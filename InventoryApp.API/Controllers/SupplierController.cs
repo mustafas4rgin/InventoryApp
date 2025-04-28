@@ -14,11 +14,43 @@ namespace InventoryApp.API.Controllers
     [ApiController]
     public class SupplierController : GenericController<Supplier,CreateSupplierDTO,UpdateSupplierDTO,SupplierDTO>
     {
+        private readonly ISupplierService _supplierService;
+        private readonly IMapper _mapper;
         public SupplierController(
-            IGenericService<Supplier> service,
+            ISupplierService service,
             IValidator<CreateSupplierDTO> createValidator,
             IValidator<UpdateSupplierDTO> updateValidator,
             IMapper mapper
-        ) : base (service,createValidator,updateValidator,mapper) {}
+        ) : base (service,createValidator,updateValidator,mapper) 
+        {
+            _mapper = mapper;
+            _supplierService = service;
+        }
+        public async override Task<IActionResult> GetAll([FromQuery]string? include, [FromQuery]string? search)
+        {
+            var result = await _supplierService.GetAllSuppliersWithIncludeAsync(include,search);
+
+            if (!result.Success)
+                return NotFound(result.Message);
+
+            var suppliers = result.Data;
+
+            var dto = _mapper.Map<List<SupplierDTO>>(suppliers);
+
+            return Ok(dto);
+        }
+        public async override Task<IActionResult> GetById(int id, string? include)
+        {
+            var result = await _supplierService.GetSupplierByIdWithIncludeAsync(include,id);
+
+            if (!result.Success)
+                return NotFound(result.Message);
+
+            var supplier = result.Data;
+
+            var dto = _mapper.Map<SupplierDTO>(supplier);
+
+            return Ok(dto);
+        }
     }
 }

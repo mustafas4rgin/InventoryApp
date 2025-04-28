@@ -20,6 +20,32 @@ public class NotificationService : GenericService<Notification>, INotificationSe
         _validator = validator;
         _genericRepository = genericRepository;
     }
+    public async Task<IServiceResult> MarkAsReadAsync(int notificationId)
+    {
+        try
+        {
+            var notification = await _genericRepository.GetByIdAsync<Notification>(notificationId);
+
+            if (notification is null)
+                return new ErrorResult($"There is no notification with ID : {notificationId}");
+
+            if (notification.Status == NotificationStatus.Read)
+                return new ErrorResult("Notification already marked as read.");
+
+            notification.Status = NotificationStatus.Read;
+
+            await _genericRepository.UpdateAsync(notification);
+            await _genericRepository.SaveChangesAsync();
+
+            return new SuccessResult("Notification marked as read.");
+        }
+        catch (Exception ex)
+        {
+            return new ErrorResult(ex.Message);
+        }
+
+
+    }
     public async Task<IServiceResultWithData<Notification>> GetNotificationByIdWithInclude(string? include, int id)
     {
         try
@@ -49,7 +75,7 @@ public class NotificationService : GenericService<Notification>, INotificationSe
             return new ErrorResultWithData<Notification>(ex.Message);
         }
     }
-    public async Task<IServiceResultWithData<IEnumerable<Notification>>> GetNotificationsWithInclude(string? include)
+    public async Task<IServiceResultWithData<IEnumerable<Notification>>> GetNotificationsWithInclude(string? include, string? search)
     {
         try
         {
@@ -66,7 +92,9 @@ public class NotificationService : GenericService<Notification>, INotificationSe
                 }
             }
 
-            var notifications = await query.Where(n => !n.IsDeleted).ToListAsync();
+            var notifications = await query.Where(s => !s.IsDeleted)
+                                .Where(s => string.IsNullOrEmpty(search) || s.Title.ToLower().Contains(search.ToLower()))
+                                .ToListAsync();
 
             if (!notifications.Any())
                 return new ErrorResultWithData<IEnumerable<Notification>>("There is no notification.");
@@ -81,10 +109,6 @@ public class NotificationService : GenericService<Notification>, INotificationSe
     public override Task<IServiceResultWithData<IEnumerable<Notification>>> GetAllAsync()
     {
         throw new NotSupportedException("Use GetNotificationsWithInclude instead of GetAllAsync.");
-    }
-    public override Task<IServiceResultWithData<Notification>> GetByIdAsync(int id)
-    {
-        throw new NotSupportedException("Use GetNotificationByIdWithIncludeAsync instead of GetByIdAsync.");
     }
 
 }

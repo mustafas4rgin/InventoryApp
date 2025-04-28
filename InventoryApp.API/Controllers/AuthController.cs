@@ -1,7 +1,9 @@
 using System.Security.Claims;
+using AutoMapper;
 using FluentValidation;
 using InventoryApp.Application.DTOs;
 using InventoryApp.Application.Interfaces;
+using InventoryApp.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,12 +14,33 @@ namespace InventoryApp.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IValidator<LoginDTO> _loginValidator;
+        private readonly IValidator<RegisterDTO> _registerValidator;
         private readonly IAuthService _authService;
+        private readonly IMapper _mapper;
 
-        public AuthController(IValidator<LoginDTO> loginValidator, IAuthService authService)
+        public AuthController(IMapper mapper, IValidator<RegisterDTO> registerValidator, IValidator<LoginDTO> loginValidator, IAuthService authService)
         {
+            _mapper = mapper;
+            _registerValidator = registerValidator;
             _authService = authService;
             _loginValidator = loginValidator;
+        }
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody]RegisterDTO dTO)
+        {
+            var validationResult = await _registerValidator.ValidateAsync(dTO);
+
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors);
+
+            var user = _mapper.Map<User>(dTO);
+
+            var registerResult = await _authService.RegisterAsync(user);
+
+            if (!registerResult.Success)
+                return BadRequest(registerResult.Message);
+
+            return Ok(registerResult.Message);
         }
         [HttpGet("me")]
         public IActionResult Me()

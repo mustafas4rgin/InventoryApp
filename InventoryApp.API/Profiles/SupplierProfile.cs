@@ -10,7 +10,24 @@ public class SupplierProfile : Profile
 {
     public SupplierProfile()
     {
-        CreateMap<Supplier,SupplierDTO>().ReverseMap();
+        CreateMap<Supplier, SupplierDTO>()
+            .ForMember(dest => dest.Users, opt => opt.MapFrom(src =>
+                src.Users
+                   .Where(u => !u.IsDeleted)
+                   .Select(u => new UserDTO
+                   {
+                       Id = u.Id,
+                       FirstName = u.FirstName,
+                       LastName = u.LastName
+                   })
+                   .ToList()
+            ))
+            .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src =>
+                src.Products
+                   .Where(p => !p.IsDeleted)
+                   .Select(p => p.Name)
+                   .ToList()
+            ));
         CreateMap<Supplier,CreateSupplierDTO>().ReverseMap();
         CreateMap<Supplier,UpdateSupplierDTO>().ReverseMap();
     }

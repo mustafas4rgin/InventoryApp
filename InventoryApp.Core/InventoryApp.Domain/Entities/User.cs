@@ -7,6 +7,7 @@ public class User : EntityBase
     public string Email { get; set; } = string.Empty;
     public int RoleId { get; set; }
     public int SupplierId { get; set; }
+    public bool IsApproved { get; set; } = false;
     public byte[] PasswordHash { get; set; } = null!;
     public byte[] PasswordSalt { get; set; } = null!;
     //navigation properties

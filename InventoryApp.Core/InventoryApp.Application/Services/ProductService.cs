@@ -19,7 +19,7 @@ public class ProductService : GenericService<Product>, IProductService
     {
         _genericRepository = genericRepository;
     }
-    public async Task<IServiceResultWithData<IEnumerable<Product>>> GetProductsWithIncludeAsync(string? include)
+    public async Task<IServiceResultWithData<IEnumerable<Product>>> GetProductsWithIncludeAsync(string? include, string? search)
     {
         try
         {
@@ -38,7 +38,9 @@ public class ProductService : GenericService<Product>, IProductService
                 }
             }
 
-            var products = await query.Where(p => !p.IsDeleted).ToListAsync();
+            var products = await query.Where(s => !s.IsDeleted)
+                                .Where(p => string.IsNullOrEmpty(search) || p.Name.ToLower().Contains(search.ToLower()))
+                                .ToListAsync();
 
             if (!products.Any())
                 return new ErrorResultWithData<IEnumerable<Product>>("There is no product.");

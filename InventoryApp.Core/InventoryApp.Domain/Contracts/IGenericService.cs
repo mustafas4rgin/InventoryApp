@@ -9,7 +9,8 @@ public interface IGenericService<T> where T : EntityBase
     Task<IServiceResultWithData<T>> GetByIdAsync(int id);
     Task<IServiceResult> AddAsync(T entity);
     Task<IServiceResult> UpdateAsync(T entity);
-    Task<IServiceResult> DeleteAsync(T entity);
+    Task<IServiceResult> DeleteAsync(int id);
     Task<IServiceResultWithData<IEnumerable<T>>> GetAllDeletedAsync();
+    Task<IServiceResult> HardDeleteAsync(int id);
 
 }

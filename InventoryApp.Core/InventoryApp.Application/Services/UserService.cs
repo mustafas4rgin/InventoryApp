@@ -22,6 +22,30 @@ public class UserService : GenericService<User>, IUserService
         _genericRepository = genericRepository;
         _validator = validator;
     }
+    public async Task<IServiceResult> ApproveUserAsync(int userId)
+    {
+        try
+        {
+            var user = await _genericRepository.GetByIdAsync<User>(userId);
+
+            if (user is null)
+                return new ErrorResult($"There is no user with ID : {userId}");
+
+            if (user.IsApproved)
+                return new ErrorResult("User already approved.");
+
+            user.IsApproved = true;
+
+            await _genericRepository.UpdateAsync(user);
+            await _genericRepository.SaveChangesAsync();
+
+            return new SuccessResult("User approved successfully.");
+        }
+        catch (Exception ex)
+        {
+            return new ErrorResult(ex.Message);
+        }
+    }
     public async Task<IServiceResult> UpdateRoleAsync(int userId,int roleId)
     {
         try
@@ -123,7 +147,7 @@ public class UserService : GenericService<User>, IUserService
             return new ErrorResultWithData<User>(ex.Message);
         }
     }
-    public async Task<IServiceResultWithData<IEnumerable<User>>> GetAllUsersWithIncludeAsync(string? include)
+    public async Task<IServiceResultWithData<IEnumerable<User>>> GetAllUsersWithIncludeAsync(string? include, string? search)
     {
         try
         {
@@ -145,7 +169,9 @@ public class UserService : GenericService<User>, IUserService
                 }
             }
 
-            var users = await query.Where(u => !u.IsDeleted).ToListAsync();
+            var users = await query.Where(s => !s.IsDeleted)
+                                .Where(s => string.IsNullOrEmpty(search) || s.FirstName.ToLower().Contains(search.ToLower()) || s.LastName.ToLower().Contains(search.ToLower()))
+                                .ToListAsync();
 
             if (!users.Any())
                 return new ErrorResultWithData<IEnumerable<User>>("There is no user.");

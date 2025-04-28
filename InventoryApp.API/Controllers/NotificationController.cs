@@ -26,9 +26,9 @@ namespace MyApp.Namespace
             _mapper = mapper;
             _notificationService = service;
         }
-        public override async Task<IActionResult> GetAll(string? include)
+        public override async Task<IActionResult> GetAll([FromQuery]string? include,[FromQuery]string? search)
         {
-            var result = await _notificationService.GetNotificationsWithInclude(include);
+            var result = await _notificationService.GetNotificationsWithInclude(include,search);
 
             if (!result.Success)
                 return NotFound(result.Message);
@@ -51,6 +51,16 @@ namespace MyApp.Namespace
             var dto = _mapper.Map<NotificationDTO>(notification);
 
             return Ok(dto);
+        }
+        [HttpPut("{notificationId}")]
+        public async Task<IActionResult> MarkAsRead([FromRoute]int notificationId)
+        {
+            var result = await _notificationService.MarkAsReadAsync(notificationId);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
         }
     }
 }

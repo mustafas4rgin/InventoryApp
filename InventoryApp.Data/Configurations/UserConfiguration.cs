@@ -37,7 +37,7 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasOne(u => u.Supplier)
-            .WithMany()
+            .WithMany(s => s.Users)
             .HasForeignKey(u => u.SupplierId)
             .OnDelete(DeleteBehavior.NoAction);
     }

@@ -16,7 +16,8 @@ public class ServiceRegistrationProvider
             (typeof(INotificationService),typeof(NotificationService)),
             (typeof(IProductService),typeof(ProductService)),
             (typeof(ITokenService),typeof(TokenService)),
-            (typeof(IAuthService),typeof(AuthService))
+            (typeof(IAuthService),typeof(AuthService)),
+            (typeof(ISupplierService),typeof(SupplierService))
         };
         foreach (var service in servicesToRegister)
         {

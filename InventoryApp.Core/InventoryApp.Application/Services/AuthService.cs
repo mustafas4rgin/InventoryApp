@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using FluentValidation;
 using InventoryApp.Application.DTOs;
 using InventoryApp.Application.Helpers;
 using InventoryApp.Application.Interfaces;
@@ -16,10 +17,75 @@ public class AuthService : IAuthService
 {
     private readonly IGenericRepository _genericRepository;
     private readonly ITokenService _tokenService;
-    public AuthService(IGenericRepository genericRepository, ITokenService tokenService)
+    private readonly IValidator<User> _validator;
+    public AuthService(IValidator<User> validator, IGenericRepository genericRepository, ITokenService tokenService)
     {
+        _validator = validator;
         _genericRepository = genericRepository;
         _tokenService = tokenService;
+    }
+    public async Task<IServiceResult> RegisterAsync(User user)
+    {
+        try
+        {
+            var validationResult = await _validator.ValidateAsync(user);
+
+            if (!validationResult.IsValid)
+                return new ErrorResult(
+                    validationResult.Errors
+                        .Select(e => e.ErrorMessage)
+                        .Aggregate((a, b) => $"{a} | {b}")
+                );
+
+            var existingUser = await _genericRepository.GetAll<User>().FirstOrDefaultAsync(u => u.Email == user.Email);
+
+            if (existingUser is not null)
+                return new ErrorResult("There is a user with this email.");
+
+            var existingRole = await _genericRepository.GetAll<Role>().FirstOrDefaultAsync(r => r.Id == user.RoleId);
+
+            if (existingRole is null || existingRole.IsDeleted)
+                return new ErrorResult($"There is no role with ID : {user.RoleId}");
+
+            var existingSupplier = await _genericRepository.GetAll<Supplier>().FirstOrDefaultAsync(s => s.Id == user.SupplierId);
+
+            if (existingSupplier is null || existingSupplier.IsDeleted)
+                return new ErrorResult($"There is no supplier with ID : {user.Supplier}");
+
+            await _genericRepository.AddAsync(user);
+
+            var admins = _genericRepository.GetAll<User>()
+                            .Include(u => u.Role)
+                            .Where(u => u.Role.Name == "Admin");
+
+            foreach (var admin in admins)
+            {
+                await _genericRepository.AddAsync(new Notification
+                {
+                    Title = "New User",
+                    Message = "New user registered and waiting for approval.",
+                    UserId = admin.Id,
+                    Type = NotificationType.Info,
+                });
+            }
+
+            await _genericRepository.AddAsync(new Notification
+            {
+                UserId = user.Id,
+                Title = "Register",
+                Message = "Thank you for registration.",
+                Type = NotificationType.Info,
+
+            });
+
+            await _genericRepository.SaveChangesAsync();
+
+            return new SuccessResult("User registered.");
+        }
+        catch (Exception ex)
+        {
+            return new ErrorResult(ex.Message);
+        }
     }
     public async Task<IServiceResult> LogOutAsync(string accessTokenString)
     {
@@ -48,7 +114,7 @@ public class AuthService : IAuthService
     {
         var refreshToken = await _genericRepository.GetAll<RefreshToken>()
                             .FirstOrDefaultAsync(rt => rt.Token == dto.Token);
-    
+
         if (refreshToken is null)
             return new ErrorResultWithData<TokenResponseDTO>("Invalid token.");
 
@@ -59,7 +125,7 @@ public class AuthService : IAuthService
 
             return new ErrorResultWithData<TokenResponseDTO>("Token expired.");
         }
-            
+
         if (refreshToken.IsUsed)
             return new ErrorResultWithData<TokenResponseDTO>("Refresh token has already been used.");
 

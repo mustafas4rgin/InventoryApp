@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace InventoryApp.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
     [ApiController]
     public class GenericController<T,TCreateDto,TUpdateDto,TListDto> : ControllerBase
     where T : EntityBase
@@ -49,9 +48,8 @@ namespace InventoryApp.API.Controllers
 
             return Ok(dto);
         }
-        [Authorize(Roles = "Admin ,Supplier")]
         [HttpGet("GetAll")]
-        public virtual async Task<IActionResult> GetAll(string? include)
+        public virtual async Task<IActionResult> GetAll([FromQuery]string? include,[FromQuery]string? search)
         {
             var result = await _genericService.GetAllAsync();
 
@@ -79,7 +77,7 @@ namespace InventoryApp.API.Controllers
             return Ok(dto);
         }
         [HttpPost("Add")]
-        public virtual async Task<IActionResult> Add(TCreateDto dto)
+        public virtual async Task<IActionResult> Add([FromBody]TCreateDto dto)
         {
             var validationResult = await _createValidator.ValidateAsync(dto);
 
@@ -120,17 +118,20 @@ namespace InventoryApp.API.Controllers
             return Ok(updatingResult.Message);
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute]int id)
+        [HttpDelete("Delete/{id}")]
+        public async Task<IActionResult> Delete([FromRoute]int id, [FromQuery]bool hard = false)
         {
-            var existingEntityResult = await _genericService.GetByIdAsync(id);
+            if (hard)
+            {
+                var hardDeletingResult = await _genericService.HardDeleteAsync(id);
 
-            if (!existingEntityResult.Success)
-                return NotFound(existingEntityResult.Message);
+                if (!hardDeletingResult.Success)
+                    return BadRequest(hardDeletingResult.Message);
 
-            var entity = existingEntityResult.Data;
+                return Ok(hardDeletingResult.Message);
+            }
 
-            var deletingResult = await _genericService.DeleteAsync(entity);
+            var deletingResult = await _genericService.DeleteAsync(id);
 
             if (!deletingResult.Success)
                 return BadRequest(deletingResult.Message);
