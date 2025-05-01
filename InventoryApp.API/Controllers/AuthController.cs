@@ -1,9 +1,11 @@
 using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using InventoryApp.Application.DTOs;
 using InventoryApp.Application.Interfaces;
 using InventoryApp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +27,41 @@ namespace InventoryApp.API.Controllers
             _authService = authService;
             _loginValidator = loginValidator;
         }
+        [Authorize]
+        [HttpPut("update-profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody]UpdateProfileDTO dto)
+        {
+            var userId = User.GetUserId();
+
+            var existingUserResult = await _authService.Me(userId);
+
+            if (!existingUserResult.Success)
+                return NotFound(existingUserResult.Message);
+
+            var existingUser = existingUserResult.Data;
+
+            _mapper.Map(dto,existingUser);
+
+            var updatingResult = await _authService.UpdateProfileAsync(existingUser);
+
+            if (!updatingResult.Success)
+                return BadRequest(updatingResult.Message);
+
+            return Ok(updatingResult.Message);
+        }
+        [Authorize]
+        [HttpPut("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordDTO dto)
+        {
+            var userId = User.GetUserId();
+
+            var result = await _authService.ResetPasswordAsync(userId,dto.OldPassword,dto.NewPassword);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
+        }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]RegisterDTO dTO)
         {
@@ -43,20 +80,26 @@ namespace InventoryApp.API.Controllers
             return Ok(registerResult.Message);
         }
         [HttpGet("me")]
-        public IActionResult Me()
+        public async Task<IActionResult> Me()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var firstName = User.FindFirstValue(ClaimTypes.Name);
-            var role = User.FindFirstValue(ClaimTypes.Role);
-
+            
             if (userId == null)
                 return Unauthorized("Invalid token.");
 
+            var result = await _authService.Me(int.Parse(userId));
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var user = result.Data;
+
+            var dto = _mapper.Map<UserDTO>(user);
+
             return Ok(new
             {
-                Id = userId,
-                FirstName = firstName,
-                Role = role
+                user = dto,
+                supplierId = user.SupplierId
             });
         }
         [HttpPost("login")]

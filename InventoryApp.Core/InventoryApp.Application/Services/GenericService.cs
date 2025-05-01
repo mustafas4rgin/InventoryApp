@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using FluentValidation;
 using InventoryApp.Application.Results;
 using InventoryApp.Application.Results.Data;
@@ -17,6 +18,27 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
     {
         _validator = validator;
         _genericRepository = genericRepository;
+    }
+    public async Task<IServiceResult> RestoreAsync(int id)
+    {
+        try
+        {
+            var entity = await _genericRepository.GetByIdAsync<T>(id);
+
+            if (entity is null || !entity.IsDeleted)
+                return new ErrorResult("Entity is not exist or wasn't deleted.");
+
+            entity.IsDeleted = false;
+
+            await _genericRepository.UpdateAsync(entity);
+            await _genericRepository.SaveChangesAsync();
+
+            return new SuccessResult("Entity restored successfully.");
+        }
+        catch (Exception ex)
+        {
+            return new ErrorResult(ex.Message);
+        }
     }
     public async Task<IServiceResult> HardDeleteAsync(int id)
     {
@@ -127,6 +149,28 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
                 );
             }
 
+            if (entity is Product product)
+            {
+                var supplier = await _genericRepository.GetAll<Supplier>()
+                                .Include(s => s.Users)
+                                .FirstOrDefaultAsync(s => s.Id == product.SupplierId);
+
+                if (supplier is not null)
+                {
+                    var productName = product.Name ?? product.ToString();
+                    foreach (var user in supplier.Users)
+                    {
+                        await _genericRepository.AddAsync(new Notification
+                        {
+                            Title = $"{productName}",
+                            Message = $"{productName} added.",
+                            Type = NotificationType.Info,
+                            UserId = user.Id
+                        });
+                    }
+                }
+            }
+
             await _genericRepository.SaveChangesAsync();
 
             return new SuccessResult("Entity created.");
@@ -154,6 +198,28 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
                                 .Include(u => u.Role)
                                 .Where(u => u.Role.Name == "Admin")
                                 .ToListAsync();
+
+            if (entity is Product product)
+            {
+                var supplier = await _genericRepository.GetAll<Supplier>()
+                                .Include(s => s.Users)
+                                .FirstOrDefaultAsync(s => s.Id == product.SupplierId);
+
+                if (supplier is not null)
+                {
+                    var productName = product.Name ?? product.ToString();
+                    foreach (var user in supplier.Users)
+                    {
+                        await _genericRepository.AddAsync(new Notification
+                        {
+                            Title = $"{productName}",
+                            Message = $"{productName} uptated.",
+                            Type = NotificationType.Info,
+                            UserId = user.Id
+                        });
+                    }
+                }
+            }
 
             foreach (var admin in admins)
             {
@@ -201,6 +267,28 @@ public class GenericService<T> : IGenericService<T> where T : EntityBase
 
             entity.IsDeleted = true;
             entity.DeletedAt = DateTime.UtcNow;
+
+            if (entity is Product product)
+            {
+                var supplier = await _genericRepository.GetAll<Supplier>()
+                                .Include(s => s.Users)
+                                .FirstOrDefaultAsync(s => s.Id == product.SupplierId);
+
+                if (supplier is not null)
+                {
+                    var productName = product.Name ?? product.ToString();
+                    foreach (var user in supplier.Users)
+                    {
+                        await _genericRepository.AddAsync(new Notification
+                        {
+                            Title = $"{productName}",
+                            Message = $"{productName} deleted.",
+                            Type = NotificationType.Info,
+                            UserId = user.Id
+                        });
+                    }
+                }
+            }
 
             var admins = await _genericRepository.GetAll<User>()
                             .Include(u => u.Role)

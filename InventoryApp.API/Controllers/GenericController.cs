@@ -33,7 +33,18 @@ namespace InventoryApp.API.Controllers
             _updateValidator = updateValidator;
             _mapper = mapper;
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Supplier")]
+        [HttpPut("Restore/{id}")]
+        public async Task<IActionResult> Restore(int id)
+        {
+            var result = await _genericService.RestoreAsync(id);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
+        }
+        [Authorize(Roles = "Admin, Supplier")]
         [HttpGet("GetAllDeleted")]
         public async Task<IActionResult> GetAllDeleted()
         {
@@ -76,6 +87,7 @@ namespace InventoryApp.API.Controllers
 
             return Ok(dto);
         }
+        [Authorize(Roles = "Admin, Supplier")]
         [HttpPost("Add")]
         public virtual async Task<IActionResult> Add([FromBody]TCreateDto dto)
         {
@@ -117,7 +129,7 @@ namespace InventoryApp.API.Controllers
 
             return Ok(updatingResult.Message);
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Supplier")]
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete([FromRoute]int id, [FromQuery]bool hard = false)
         {

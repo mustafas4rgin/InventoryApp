@@ -11,6 +11,8 @@ public class UserProfile : Profile
 {
     public UserProfile()
     {
+        CreateMap<UpdateProfileDTO, User>().ReverseMap();
+
         CreateMap<CreateUserDTO, User>()
             .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
             .ForMember(dest => dest.PasswordSalt, opt => opt.Ignore())

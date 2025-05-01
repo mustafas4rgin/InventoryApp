@@ -92,7 +92,7 @@ namespace MyApp.Namespace
             if (!dtoValidationResult.IsValid)
                 return BadRequest(dtoValidationResult.Errors);
 
-            var existingUserResult = await _userService.GetUserByIdWithIncludeAsync(null, id); // << BURASI DÜZELDİ
+            var existingUserResult = await _userService.GetUserByIdWithIncludeAsync(null, id); 
 
             if (!existingUserResult.Success)
                 return NotFound(existingUserResult.Message);
@@ -101,7 +101,7 @@ namespace MyApp.Namespace
 
             _mapper.Map(dto, existingUser);
 
-            var updatingResult = await _userService.UpdateUserAsync(existingUser); // dikkat! Update değil UpdateUserAsync
+            var updatingResult = await _userService.UpdateUserAsync(existingUser); 
 
             if (!updatingResult.Success)
                 return BadRequest(updatingResult.Message);

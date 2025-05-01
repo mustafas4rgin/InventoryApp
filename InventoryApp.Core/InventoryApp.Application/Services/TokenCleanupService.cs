@@ -31,7 +31,7 @@ public class TokenCleanupService : BackgroundService
                 
             await repo.SaveChangesAsync();
 
-            await Task.Delay(TimeSpan.FromHours(24), stoppingToken); // her 24 saatte bir çalışsın
+            await Task.Delay(TimeSpan.FromHours(24), stoppingToken);
         }
     }
 }

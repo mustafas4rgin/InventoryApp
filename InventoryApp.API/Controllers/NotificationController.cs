@@ -6,6 +6,7 @@ using InventoryApp.Application.DTOs.List;
 using InventoryApp.Application.DTOs.Update;
 using InventoryApp.Domain.Contracts;
 using InventoryApp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MyApp.Namespace
@@ -25,6 +26,21 @@ namespace MyApp.Namespace
         {
             _mapper = mapper;
             _notificationService = service;
+        }
+        [Authorize]
+        [HttpGet("user-notifications/{userId}")]
+        public async Task<IActionResult> GetUsersNotifications(int userId)
+        {
+            var result = await _notificationService.GetNotificationByUserIdAsync(userId);
+
+            if (!result.Success)
+                return NotFound(result.Message);
+
+            var notifications = result.Data;
+
+            var dto = _mapper.Map<List<NotificationDTO>>(notifications);
+
+            return Ok(dto);
         }
         public override async Task<IActionResult> GetAll([FromQuery]string? include,[FromQuery]string? search)
         {

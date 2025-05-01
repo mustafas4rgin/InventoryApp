@@ -12,5 +12,5 @@ public interface IGenericService<T> where T : EntityBase
     Task<IServiceResult> DeleteAsync(int id);
     Task<IServiceResultWithData<IEnumerable<T>>> GetAllDeletedAsync();
     Task<IServiceResult> HardDeleteAsync(int id);
-
+    Task<IServiceResult> RestoreAsync(int id);
 }

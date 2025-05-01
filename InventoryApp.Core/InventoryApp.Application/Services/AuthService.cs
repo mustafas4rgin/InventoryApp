@@ -24,6 +24,103 @@ public class AuthService : IAuthService
         _genericRepository = genericRepository;
         _tokenService = tokenService;
     }
+    public async Task<IServiceResult> UpdateProfileAsync(User user)
+    {
+        try
+        {
+            var validationResult = await _validator.ValidateAsync(user);
+
+            if (!validationResult.IsValid)
+                return new ErrorResult(
+                    validationResult.Errors
+                        .Select(e => e.ErrorMessage)
+                        .Aggregate((a, b) => $"{a} | {b}")
+                );
+
+            await _genericRepository.AddAsync(
+                new Notification
+                {
+                    Title = "Profile",
+                    Message = "Profile updated successfully.",
+                    Type = NotificationType.Success,
+                    UserId = user.Id
+                }
+            );
+
+            await _genericRepository.UpdateAsync(user);
+            await _genericRepository.SaveChangesAsync();
+
+            return new SuccessResult("User updated successfully.");
+        }
+        catch (Exception ex)
+        {
+            return new ErrorResult(ex.Message);
+        }
+    }
+    public async Task<IServiceResult> ResetPasswordAsync(int userId, string oldPassword, string newPassword)
+    {
+        try
+        {
+            var user = await _genericRepository.GetByIdAsync<User>(userId);
+
+            if (user is null)
+                return new ErrorResult("User not found.");
+
+            if (!HashingHelper.VerifyPasswordHash(oldPassword, user.PasswordHash, user.PasswordSalt))
+                return new ErrorResult("Wrong old password.");
+
+            HashingHelper.CreatePasswordHash(newPassword, out var hash, out var salt);
+
+            user.PasswordHash = hash;
+            user.PasswordSalt = salt;
+
+            var admins = await _genericRepository.GetAll<User>().Include(u => u.Role).Where(u => u.Role.Name == "Admin").ToListAsync();
+
+            foreach (var admin in admins)
+            {
+                await _genericRepository.AddAsync(
+                new Notification
+                {
+                    Title = $"About user : {user.FirstName}",
+                    Message = $"{user.FirstName} changed password.",
+                    UserId = admin.Id,
+                    Type = NotificationType.Info,
+                }
+            );
+            }
+
+            await _genericRepository.AddAsync(
+                new Notification
+                {
+                    Title = "Password Change",
+                    Message = "Your password changed successfully.",
+                    UserId = user.Id,
+                    Type = NotificationType.Success
+                }
+            );
+
+            await _genericRepository.UpdateAsync(user);
+            await _genericRepository.SaveChangesAsync();
+
+            return new SuccessResult("Password changed successfully.");
+
+        }
+        catch (Exception ex)
+        {
+            return new ErrorResult(ex.Message);
+        }
+
+
+    }
+    public async Task<IServiceResultWithData<User>> Me(int userId)
+    {
+        var user = await _genericRepository.GetAll<User>().Include(u => u.Role).Include(u => u.Supplier).FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user is null)
+            return new ErrorResultWithData<User>($"Invalid token.");
+
+        return new SuccessResultWithData<User>("Me: ", user);
+    }
     public async Task<IServiceResult> RegisterAsync(User user)
     {
         try

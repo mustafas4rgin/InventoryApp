@@ -20,6 +20,22 @@ public class NotificationService : GenericService<Notification>, INotificationSe
         _validator = validator;
         _genericRepository = genericRepository;
     }
+    public async Task<IServiceResultWithData<IEnumerable<Notification>>> GetNotificationByUserIdAsync(int userId)
+    {
+        try
+        {
+            var notifications = await _genericRepository.GetAll<Notification>().Where(n => n.UserId == userId).ToListAsync();
+
+            if (!notifications.Any())
+                return new ErrorResultWithData<IEnumerable<Notification>>("There is no notification.");
+
+            return new SuccessResultWithData<IEnumerable<Notification>>("Notifications found.", notifications);
+        }
+        catch (Exception ex)
+        {
+            return new ErrorResultWithData<IEnumerable<Notification>>(ex.Message);
+        }
+    }
     public async Task<IServiceResult> MarkAsReadAsync(int notificationId)
     {
         try
