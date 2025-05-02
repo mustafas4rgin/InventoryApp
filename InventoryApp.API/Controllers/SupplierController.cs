@@ -5,12 +5,14 @@ using InventoryApp.Application.DTOs.List;
 using InventoryApp.Application.DTOs.Update;
 using InventoryApp.Domain.Contracts;
 using InventoryApp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryApp.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles ="Supplier")]
     [ApiController]
     public class SupplierController : GenericController<Supplier,CreateSupplierDTO,UpdateSupplierDTO,SupplierDTO>
     {

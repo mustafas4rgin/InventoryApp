@@ -6,10 +6,12 @@ using InventoryApp.Domain.Contracts;
 using InventoryApp.Domain.Entities;
 using InventoryApp.Application.DTOs.Update;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InventoryApp.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles ="Admin")]
     [ApiController]
     public class RoleController : GenericController<Role,CreateRoleDTO,UpdateRoleDTO,RoleDTO>
     {

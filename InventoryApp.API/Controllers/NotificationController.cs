@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MyApp.Namespace
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class NotificationController : GenericController<Notification,CreateNotificationDTO,UpdateNotificationDTO,NotificationDTO>
@@ -27,7 +28,6 @@ namespace MyApp.Namespace
             _mapper = mapper;
             _notificationService = service;
         }
-        [Authorize]
         [HttpGet("user-notifications/{userId}")]
         public async Task<IActionResult> GetUsersNotifications(int userId)
         {

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MyApp.Namespace
 {
+    [Authorize(Roles ="Admin, Supplier")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : GenericController<Product,CreateProductDTO,UpdateProductDTO,ProductDTO>
@@ -29,7 +30,6 @@ namespace MyApp.Namespace
             _mapper = mapper;
             _productService = service;
         }
-        [Authorize(Roles = "Supplier, Admin")]
         [HttpGet("ownDeleted")]
         public async Task<IActionResult> GetOwnDeletedProducts()
         {
@@ -46,7 +46,6 @@ namespace MyApp.Namespace
 
             return Ok(dto);
         }
-        [Authorize(Roles = "Supplier, Admin")]
         [HttpGet("own")]
         public async Task<IActionResult> GetOwnProducts()
         {

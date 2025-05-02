@@ -42,6 +42,7 @@ namespace MyApp.Namespace
 
             return Ok(result.Message);
         }
+        [Authorize(Roles ="Admin")]
         public override async Task<IActionResult> Add(CreateUserDTO dto)
         {
             var dtoValidationResult = await _createValidator.ValidateAsync(dto);
@@ -72,6 +73,7 @@ namespace MyApp.Namespace
 
             return Ok(dto);
         }
+        [Authorize(Roles ="Admin")]
         public override async Task<IActionResult> GetById(int id, string? include)
         {
             var result = await _userService.GetUserByIdWithIncludeAsync(include, id);
@@ -85,6 +87,7 @@ namespace MyApp.Namespace
 
             return Ok(dto);
         }
+        [Authorize(Roles ="Admin")]
         public override async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateUserDTO dto)
         {
             var dtoValidationResult = await _updateValidator.ValidateAsync(dto);
@@ -108,6 +111,7 @@ namespace MyApp.Namespace
 
             return Ok(updatingResult.Message);
         }
+        [Authorize(Roles ="Admin")]
         [HttpPut("{userId}/Role/{roleId}")]
         public async Task<IActionResult> UpdateRole([FromRoute]int userId,[FromRoute]int roleId)
         {
